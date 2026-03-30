@@ -1,0 +1,73 @@
+body{
+    text-align:center;
+    font-family:Arial, sans-serif;
+    background:#f1f5f9;
+    margin:0;
+    padding:10px;
+    color:#111827;
+}
+
+h1{
+    font-size:26px;
+    margin-top:10px;
+    color:#0f172a;
+}
+
+.top{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    margin:10px;
+    font-size:18px;
+}
+
+#msg{
+    color:#2563eb;
+    font-weight:bold;
+}
+
+#grid{
+    display:grid;
+    grid-template-columns:repeat(8,1fr);
+    width:90vw;
+    max-width:420px;
+    margin:20px auto;
+    gap:6px;
+}
+
+.cell{
+    width:100%;
+    aspect-ratio:1/1;
+    background:#e5e7eb;
+    border-radius:8px;
+    border:1px solid #cbd5e1;
+}
+
+.player{
+    background:#2563eb;
+    box-shadow:0 0 8px rgba(37,99,235,0.6);
+}
+
+.treasure{
+    background:#f59e0b;
+    box-shadow:0 0 8px rgba(245,158,11,0.7);
+}
+
+.wall{
+    background:#111827;
+}
+
+button{
+    padding:10px 25px;
+    font-size:15px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:6px;
+    margin:10px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}

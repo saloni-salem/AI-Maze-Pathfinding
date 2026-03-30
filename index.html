@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Maze Pathfinding Game</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<h1>AI Maze Pathfinding Game</h1>
+
+<div class="top">
+    <div>Score: <span id="score">0</span></div>
+    <div id="msg">Click Start AI</div>
+</div>
+
+<div id="grid"></div>
+
+<button onclick="startAI()">Start AI</button>
+<button onclick="newMaze()">New Maze</button>
+
+<script>
+
+const rows = 8;
+const cols = 8;
+
+let grid = [];
+let player;
+let treasure;
+let score = 0;
+
+const board = document.getElementById("grid");
+const msg = document.getElementById("msg");
+
+
+
+function makeMaze(){
+
+    while(true){
+
+        grid = [];
+
+        for(let i=0;i<rows;i++){
+            grid[i] = [];
+            for(let j=0;j<cols;j++){
+                grid[i][j] = 0;
+            }
+        }
+
+        player = [Math.floor(Math.random()*rows), Math.floor(Math.random()*cols)];
+
+        do{
+            treasure = [Math.floor(Math.random()*rows), Math.floor(Math.random()*cols)];
+            d = Math.abs(player[0]-treasure[0]) + Math.abs(player[1]-treasure[1]);
+        }while(d < 6);
+
+        for(let i=0;i<22;i++){
+            let r = Math.floor(Math.random()*rows);
+            let c = Math.floor(Math.random()*cols);
+
+            if((r != player[0] || c != player[1]) &&
+               (r != treasure[0] || c != treasure[1])){
+                grid[r][c] = 1;
+            }
+        }
+
+        return;
+    }
+}
+
+
+
+function createGrid(){
+
+    board.innerHTML = "";
+    makeMaze();
+
+    for(let i=0;i<rows;i++){
+        for(let j=0;j<cols;j++){
+            let cell = document.createElement("div");
+            cell.className = "cell";
+            cell.id = i + "-" + j;
+            board.appendChild(cell);
+        }
+    }
+
+    draw();
+}
+
+
+
+function draw(){
+
+    document.querySelectorAll(".cell").forEach(c => c.className = "cell");
+
+    document.getElementById(player[0]+"-"+player[1]).classList.add("player");
+    document.getElementById(treasure[0]+"-"+treasure[1]).classList.add("treasure");
+
+    for(let i=0;i<rows;i++){
+        for(let j=0;j<cols;j++){
+            if(grid[i][j] == 1){
+                document.getElementById(i+"-"+j).classList.add("wall");
+            }
+        }
+    }
+}
+
+
+
+function startAI(){
+
+    msg.innerText = "Searching path...";
+
+    fetch("/find_path",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+            grid:grid,
+            start:player,
+            goal:treasure
+        })
+    })
+    .then(res=>res.json())
+    .then(data=>{
+
+        if(data.path.length == 0){
+            msg.innerText = "Maze regenerated!";
+            createGrid();
+            return;
+        }
+
+        msg.innerText = "Path found!";
+
+        move(data.path);
+    });
+}
+
+
+
+function move(path){
+
+    let i = 0;
+
+    let interval = setInterval(()=>{
+
+        if(i >= path.length){
+            clearInterval(interval);
+            score++;
+            document.getElementById("score").innerText = score;
+            msg.innerText = "Treasure collected!";
+            return;
+        }
+
+        player = path[i];
+        draw();
+        i++;
+
+    }, 300);
+}
+
+
+
+function newMaze(){
+    msg.innerText = "New Maze Created";
+    createGrid();
+}
+
+
+createGrid();
+
+</script>
+
+</body>
+</html>
